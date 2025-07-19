@@ -289,7 +289,7 @@ docker compose logs -f
 For additional help:
 - **Documentation**: [Project Wiki](https://github.com/THakgvLO/hydronexus-africa/wiki)
 - **Issues**: [GitHub Issues](https://github.com/THakgvLO/hydronexus-africa/issues)
-- **Email**: [support@hydronexus.africa](mailto:support@hydronexus.africa)
+- **Email**: [slthakgalo04@gmail.com](mailto:slthakgalo04@gmail.com)
 
 ---
 

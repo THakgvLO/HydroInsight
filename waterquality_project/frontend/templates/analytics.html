@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HydroNexus Africa - Analytics Dashboard</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/analytics.css' %}">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>HydroNexus Africa</h1>
+        <p class="subtitle">Advanced Analytics Dashboard</p>
+        <p class="credits">Developed by Thakgalo Sehlola</p>
+        <nav>
+            <a href="/" class="nav-link">Main Dashboard</a>
+            <a href="/analytics/" class="nav-link active">Analytics</a>
+            <a href="/admin/" class="nav-link">Admin</a>
+        </nav>
+    </header>
+
+    <main>
+        <!-- System Overview Cards -->
+        <section class="overview-section">
+            <h2>System Overview</h2>
+            <div class="overview-cards">
+                <div class="card" id="total-stations-card">
+                    <div class="card-icon">📊</div>
+                    <div class="card-content">
+                        <h3>Total Stations</h3>
+                        <p class="card-value" id="total-stations">-</p>
+                    </div>
+                </div>
+                <div class="card" id="active-stations-card">
+                    <div class="card-icon">✅</div>
+                    <div class="card-content">
+                        <h3>Active Stations</h3>
+                        <p class="card-value" id="active-stations">-</p>
+                    </div>
+                </div>
+                <div class="card" id="total-samples-card">
+                    <div class="card-icon">💧</div>
+                    <div class="card-content">
+                        <h3>Total Samples</h3>
+                        <p class="card-value" id="total-samples">-</p>
+                    </div>
+                </div>
+                <div class="card" id="quality-score-card">
+                    <div class="card-icon">🎯</div>
+                    <div class="card-content">
+                        <h3>Avg Quality Score</h3>
+                        <p class="card-value" id="avg-quality-score">-</p>
+                    </div>
+                </div>
+                <div class="card" id="critical-alerts-card">
+                    <div class="card-icon">⚠️</div>
+                    <div class="card-content">
+                        <h3>Critical Alerts</h3>
+                        <p class="card-value" id="critical-alerts">-</p>
+                    </div>
+                </div>
+                <div class="card" id="data-completeness-card">
+                    <div class="card-icon">📈</div>
+                    <div class="card-content">
+                        <h3>Data Completeness</h3>
+                        <p class="card-value" id="data-completeness">-</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Charts Section -->
+        <section class="charts-section">
+            <div class="chart-container">
+                <h3>Sample Trends (Last 30 Days)</h3>
+                <canvas id="sampleTrendsChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3>Parameter Averages</h3>
+                <canvas id="parameterAveragesChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Top Performers Section -->
+        <section class="performers-section">
+            <div class="top-performers">
+                <h3>Top Performing Stations</h3>
+                <div class="station-list" id="top-stations-list">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+            <div class="problematic-stations">
+                <h3>Stations Requiring Attention</h3>
+                <div class="station-list" id="problematic-stations-list">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Geographic Distribution -->
+        <section class="geographic-section">
+            <h3>Geographic Distribution</h3>
+            <div class="chart-container">
+                <canvas id="geographicChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Recent Alerts -->
+        <section class="alerts-section">
+            <h3>Recent Alerts</h3>
+            <div class="alerts-list" id="recent-alerts-list">
+                <!-- Populated by JavaScript -->
+            </div>
+        </section>
+
+        <!-- Report Generation -->
+        <section class="reports-section">
+            <h3>Generate Reports</h3>
+            <div class="report-controls">
+                <select id="report-type">
+                    <option value="system_overview">System Overview</option>
+                    <option value="quality_assessment">Quality Assessment</option>
+                    <option value="station_comparison">Station Comparison</option>
+                </select>
+                <button id="generate-report-btn" class="btn-primary">Generate Report</button>
+                <button id="export-data-btn" class="btn-secondary">Export Data</button>
+            </div>
+            <div id="report-output" class="report-output"></div>
+        </section>
+    </main>
+
+    <script src="{% static 'js/analytics.js' %}"></script>
+</body>
+</html> 

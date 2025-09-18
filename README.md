@@ -1,8 +1,8 @@
 # HydroInsight 🌊
 
-**Interactive Water Quality Monitoring Platform**
+**South African Water Quality Monitoring Platform**
 
-HydroInsight is a comprehensive web application that provides real-time visualization of water quality monitoring stations through interactive maps and data analytics. Built for environmental scientists, researchers, and water management professionals.
+HydroInsight is a comprehensive web application that provides real-time visualization of South African water quality monitoring stations through interactive maps and data analytics. Built for environmental scientists, researchers, and water management professionals across South Africa's nine provinces.
 
 ![HydroInsight Demo](https://img.shields.io/badge/Status-Live-brightgreen)
 ![Python](https://img.shields.io/badge/Python-3.8+-blue)
@@ -11,22 +11,26 @@ HydroInsight is a comprehensive web application that provides real-time visualiz
 
 ## 🌟 Features
 
-- **Interactive Map Visualization**: Real-time display of water quality monitoring stations using Leaflet.js
-- **Data Analytics Dashboard**: Chart.js powered visualizations for pH levels and water quality metrics
-- **Station Details**: Comprehensive popup information including pH, turbidity, and sample dates
-- **Responsive Design**: Modern, clean UI that works across all devices
-- **RESTful API**: Flask backend providing station data endpoints
-- **Real-time Updates**: Live data monitoring capabilities
+- **🇿🇦 South African Focus**: Monitoring stations across all 9 provinces
+- **Interactive Map Visualization**: Real-time display using Leaflet.js with accurate SA coordinates
+- **Advanced Filtering**: Filter by province, water quality status, or specific parameters
+- **Multi-Parameter Analytics**: pH, turbidity, temperature, dissolved oxygen, and conductivity
+- **Status-Based Color Coding**: Visual indicators (Good/Fair/Poor) for quick assessment
+- **Responsive Design**: Modern, clean UI optimized for all devices
+- **RESTful API**: Comprehensive Flask backend with multiple endpoints
+- **Real-time Statistics**: Live dashboard with key metrics and averages
 
-## 🗺️ Sample Stations
+## 🗺️ Monitoring Stations
 
-The application currently monitors three key water quality stations:
+The application monitors water quality stations across South Africa:
 
-| Station | Location | pH Level | Turbidity | Last Sample |
-|---------|----------|----------|-----------|-------------|
-| Riverbank Station | -1.2921, 36.8219 | 7.2 | 3.1 NTU | 2024-07-20 |
-| Lakeside Station | -1.3000, 36.8000 | 6.8 | 2.5 NTU | 2024-07-19 |
-| Upland Station | -1.3100, 36.8500 | 7.5 | 1.8 NTU | 2024-07-18 |
+| Station | Province | Waterbody | pH | Temperature | Status | Last Sample |
+|---------|----------|-----------|----|-----------|---------|-----------| 
+| Cape Town - V&A Waterfront | Western Cape | Atlantic Ocean | 8.1 | 16.5°C | Good | 2024-12-15 |
+| Johannesburg - Vaal River | Gauteng | Vaal River | 7.4 | 22.1°C | Fair | 2024-12-14 |
+| Durban - Umgeni River | KwaZulu-Natal | Umgeni River | 7.8 | 24.3°C | Good | 2024-12-13 |
+| Bloemfontein - Modder River | Free State | Modder River | 7.1 | 20.7°C | Fair | 2024-12-12 |
+| Port Elizabeth - Sundays River | Eastern Cape | Sundays River | 7.6 | 18.9°C | Good | 2024-12-11 |
 
 ## 🚀 Getting Started
 
@@ -54,12 +58,13 @@ Clone the repository and open `index.html` in your browser to see the applicatio
 
 ```
 HydroInsight/
-├── index.html          # Main application page
-├── style.css           # Modern CSS styling
-├── script.js           # Frontend JavaScript logic
-├── backend.py          # Flask API server
-├── requirements.txt    # Python dependencies
-└── README.md          # Project documentation
+├── index.html              # Main application page
+├── style.css               # Modern CSS styling with responsive design
+├── script.js               # Frontend JavaScript with interactive features
+├── water_quality_data.json # South African water quality monitoring data
+├── backend.py              # Flask API server with multiple endpoints
+├── requirements.txt        # Python dependencies
+└── README.md              # Project documentation
 ```
 
 ## 🏃‍♂️ Quick Start

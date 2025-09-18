@@ -3,22 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HydroInsight - Water Quality Monitoring Platform</title>
+    <title>HydroInsight - South African Water Quality Monitoring</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h1>HydroInsight - Water Quality Monitoring Platform</h1>
-        
-        <div class="map-section">
-            <h2>Station Locations</h2>
-            <div id="map"></div>
+        <header>
+            <h1>🌊 HydroInsight</h1>
+            <p>South African Water Quality Monitoring Network</p>
+        </header>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="stationFilter">Filter by Province:</label>
+                <select id="stationFilter">
+                    <option value="all">All Provinces</option>
+                    <option value="Western Cape">Western Cape</option>
+                    <option value="Gauteng">Gauteng</option>
+                    <option value="KwaZulu-Natal">KwaZulu-Natal</option>
+                    <option value="Free State">Free State</option>
+                    <option value="Eastern Cape">Eastern Cape</option>
+                    <option value="Mpumalanga">Mpumalanga</option>
+                    <option value="Northern Cape">Northern Cape</option>
+                    <option value="Limpopo">Limpopo</option>
+                    <option value="North West">North West</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="statusFilter">Filter by Status:</label>
+                <select id="statusFilter">
+                    <option value="all">All Status</option>
+                    <option value="Good">Good</option>
+                    <option value="Fair">Fair</option>
+                    <option value="Poor">Poor</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="parameterSelect">Parameter:</label>
+                <select id="parameterSelect">
+                    <option value="ph">pH Level</option>
+                    <option value="turbidity">Turbidity (NTU)</option>
+                    <option value="temperature">Temperature (°C)</option>
+                    <option value="dissolved_oxygen">Dissolved Oxygen (mg/L)</option>
+                    <option value="conductivity">Conductivity (μS/cm)</option>
+                </select>
+            </div>
         </div>
-        
-        <div class="chart-section">
-            <h2>pH Levels by Station</h2>
-            <canvas id="chart"></canvas>
+
+        <div class="stats-panel">
+            <div class="stat-card">
+                <h3>Total Stations</h3>
+                <span id="totalStations">-</span>
+            </div>
+            <div class="stat-card">
+                <h3>Good Status</h3>
+                <span id="goodStations">-</span>
+            </div>
+            <div class="stat-card">
+                <h3>Avg pH</h3>
+                <span id="avgPh">-</span>
+            </div>
+            <div class="stat-card">
+                <h3>Avg Temperature</h3>
+                <span id="avgTemp">-</span>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="map-section">
+                <h2>📍 Monitoring Stations</h2>
+                <div id="map"></div>
+            </div>
+            
+            <div class="chart-section">
+                <h2>📊 Water Quality Parameters</h2>
+                <canvas id="chart"></canvas>
+            </div>
+        </div>
+
+        <div class="station-details">
+            <h2>🏢 Station Details</h2>
+            <div id="stationInfo">Click on a station marker to view details</div>
         </div>
     </div>
 

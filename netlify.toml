@@ -1,0 +1,25 @@
+[build]
+  publish = "."
+  command = "echo 'No build command needed'"
+
+[functions]
+  directory = "netlify/functions"
+
+[[redirects]]
+  from = "/api/stations"
+  to = "/.netlify/functions/get_stations"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Headers = "Content-Type"
+    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+
+[[headers]]
+  for = "/netlify/functions/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Headers = "Content-Type"
+    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"

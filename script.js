@@ -14,22 +14,35 @@ async function loadWaterQualityData() {
     try {
         console.log('Loading NIWIS Water Quality Monitoring Network data...');
         
-        // Try to load from API first (if Flask server is running)
+        // Try to load from Netlify function first, then fallback to local Flask server
         let response;
         try {
-            response = await fetch('http://localhost:5000/api/stations');
+            // Try Netlify function first
+            response = await fetch('/api/stations');
             if (response.ok) {
                 stations = await response.json();
-                console.log('Loaded data from Flask API server');
+                console.log('Loaded data from Netlify function');
             } else {
-                throw new Error('API not available');
+                throw new Error('Netlify function not available');
             }
-        } catch (apiError) {
-            console.log('Flask API not available, trying direct JSON file...');
-            // Fallback to direct JSON file
-            response = await fetch('water_quality_data.json');
-            stations = await response.json();
-            console.log('Loaded data directly from JSON file');
+        } catch (netlifyError) {
+            console.log('Netlify function not available, trying Flask server...');
+            try {
+                // Fallback to Flask server
+                response = await fetch('http://localhost:5000/api/stations');
+                if (response.ok) {
+                    stations = await response.json();
+                    console.log('Loaded data from Flask API server');
+                } else {
+                    throw new Error('Flask API not available');
+                }
+            } catch (flaskError) {
+                console.log('Flask API not available, trying direct JSON file...');
+                // Final fallback to direct JSON file
+                response = await fetch('water_quality_data.json');
+                stations = await response.json();
+                console.log('Loaded data directly from JSON file');
+            }
         }
         
         filteredStations = [...stations];

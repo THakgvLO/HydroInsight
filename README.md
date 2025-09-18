@@ -28,9 +28,9 @@ The application currently monitors three key water quality stations:
 | Lakeside Station | -1.3000, 36.8000 | 6.8 | 2.5 NTU | 2024-07-19 |
 | Upland Station | -1.3100, 36.8500 | 7.5 | 1.8 NTU | 2024-07-18 |
 
-## 🚀 Live Demo
+## 🚀 Getting Started
 
-**Access the live application**: [View HydroInsight](https://thakgvlo.github.io/HydroInsight/)
+Clone the repository and open `index.html` in your browser to see the application in action.
 
 ## 🛠️ Tech Stack
 
@@ -46,9 +46,9 @@ The application currently monitors three key water quality stations:
 - **Flask 2.3.3** - Lightweight web framework
 - **RESTful API** - JSON endpoints for data access
 
-### Deployment
-- **GitHub Pages** - Static site hosting
+### Development
 - **Git** - Version control and collaboration
+- **Local Development** - No build process required
 
 ## 📁 Project Structure
 
@@ -143,17 +143,19 @@ const stations = [
 ### Customizing Charts
 Modify the Chart.js configuration in `script.js` to change visualization types, colors, or data metrics.
 
-## 🌐 Deployment
+## 🌐 Deployment Options
 
-### GitHub Pages (Current)
-This application is deployed using GitHub Pages for static hosting:
-- Repository: `https://github.com/THakgvLO/HydroInsight`
-- Live URL: `https://thakgvlo.github.io/HydroInsight/`
+This application can be deployed to various hosting platforms:
 
-### Alternative Hosting Options
+### Static Hosting (Frontend Only)
 - **Netlify**: Drag and drop deployment
 - **Vercel**: Git-based deployment
+- **GitHub Pages**: Static site hosting
+
+### Full Stack Hosting
 - **Heroku**: Full-stack hosting with backend support
+- **Railway**: Modern deployment platform
+- **DigitalOcean**: VPS hosting
 
 ## 🤝 Contributing
 

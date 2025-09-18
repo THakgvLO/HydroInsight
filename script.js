@@ -13,8 +13,25 @@ let maxMarkersToShow = 1000; // Limit markers for performance
 async function loadWaterQualityData() {
     try {
         console.log('Loading NIWIS Water Quality Monitoring Network data...');
-        const response = await fetch('water_quality_data.json');
-        stations = await response.json();
+        
+        // Try to load from API first (if Flask server is running)
+        let response;
+        try {
+            response = await fetch('http://localhost:5000/api/stations');
+            if (response.ok) {
+                stations = await response.json();
+                console.log('Loaded data from Flask API server');
+            } else {
+                throw new Error('API not available');
+            }
+        } catch (apiError) {
+            console.log('Flask API not available, trying direct JSON file...');
+            // Fallback to direct JSON file
+            response = await fetch('water_quality_data.json');
+            stations = await response.json();
+            console.log('Loaded data directly from JSON file');
+        }
+        
         filteredStations = [...stations];
         isDataLoaded = true;
         console.log('Loaded', stations.length, 'water quality stations from NIWIS');
@@ -26,9 +43,19 @@ async function loadWaterQualityData() {
         return stations;
     } catch (error) {
         console.error('Error loading water quality data:', error);
-        // Show error message to user
-        document.getElementById('stationInfo').innerHTML = 
-            '<div style="color: red;">Error loading water quality data. Please ensure water_quality_data.json is available.</div>';
+        // Show helpful error message to user
+        document.getElementById('stationInfo').innerHTML = `
+            <div style="color: red; padding: 20px; background: #fff5f5; border-radius: 5px;">
+                <h3>Data Loading Error</h3>
+                <p>Unable to load water quality data. This could be due to:</p>
+                <ul>
+                    <li><strong>CORS restrictions</strong> - Try running the Flask server: <code>python backend.py</code></li>
+                    <li><strong>Missing JSON file</strong> - Ensure water_quality_data.json is in the project directory</li>
+                    <li><strong>File access issues</strong> - Check file permissions</li>
+                </ul>
+                <p><strong>Solution:</strong> Run <code>python backend.py</code> in the terminal, then refresh this page.</p>
+            </div>
+        `;
         return [];
     }
 }
@@ -196,21 +223,69 @@ function createChart() {
     const ctx = document.getElementById('chart').getContext('2d');
     const selectedParameter = document.getElementById('parameterSelect').value;
     const parameterLabel = document.getElementById('parameterSelect').selectedOptions[0].text;
+    const chartType = document.getElementById('chartTypeSelect').value;
     
     if (chart) {
         chart.destroy();
     }
     
-    chart = new Chart(ctx, {
+    let chartData, chartOptions;
+    
+    switch (chartType) {
+        case 'province':
+            chartData = createProvinceChart(selectedParameter, parameterLabel);
+            break;
+        case 'status':
+            chartData = createStatusChart(selectedParameter, parameterLabel);
+            break;
+        case 'stationType':
+            chartData = createStationTypeChart(selectedParameter, parameterLabel);
+            break;
+        case 'distribution':
+            chartData = createDistributionChart(selectedParameter, parameterLabel);
+            break;
+        default:
+            chartData = createProvinceChart(selectedParameter, parameterLabel);
+    }
+    
+    chart = new Chart(ctx, chartData);
+}
+
+// Create chart by province averages
+function createProvinceChart(parameter, parameterLabel) {
+    const provinceData = {};
+    
+    filteredStations.forEach(station => {
+        const province = station.province;
+        const value = station[parameter];
+        
+        if (!provinceData[province]) {
+            provinceData[province] = [];
+        }
+        provinceData[province].push(value);
+    });
+    
+    const provinces = Object.keys(provinceData);
+    const labels = provinces.length > 0 ? provinces : ['Overall'];
+    const data = provinces.length > 0 ? 
+        provinces.map(province => {
+            const values = provinceData[province];
+            return (values.reduce((sum, val) => sum + val, 0) / values.length).toFixed(2);
+        }) : [0];
+    
+    const colors = [
+        '#2196F3', '#4CAF50', '#FF9800', '#F44336', '#9C27B0',
+        '#00BCD4', '#8BC34A', '#FF5722', '#795548', '#607D8B'
+    ];
+    
+    return {
         type: 'bar',
         data: {
-            labels: filteredStations.map(station => station.name.split(' - ')[0]), // Use city name only
+            labels: labels,
             datasets: [{
-                label: parameterLabel,
-                data: filteredStations.map(station => station[selectedParameter]),
-                backgroundColor: filteredStations.map(station => 
-                    selectedParameter === 'status' ? getStatusColor(station.status) : '#2196F3'
-                ),
+                label: `Average ${parameterLabel}`,
+                data: data,
+                backgroundColor: labels.map((_, index) => colors[index % colors.length]),
                 borderColor: '#fff',
                 borderWidth: 2
             }]
@@ -220,33 +295,198 @@ function createChart() {
             maintainAspectRatio: false,
             scales: {
                 y: {
-                    beginAtZero: selectedParameter !== 'ph',
-                    title: {
-                        display: true,
-                        text: parameterLabel
-                    }
+                    beginAtZero: parameter !== 'ph',
+                    title: { display: true, text: `Average ${parameterLabel}` }
                 },
-                x: {
-                    ticks: {
-                        maxRotation: 45,
-                        minRotation: 0
-                    }
+                x: { ticks: { maxRotation: 45, minRotation: 0 } }
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    text: `Average ${parameterLabel} by Province (${filteredStations.length} stations)`,
+                    font: { size: 16 }
+                },
+                legend: { display: true, position: 'top' }
+            }
+        }
+    };
+}
+
+// Create chart by quality status
+function createStatusChart(parameter, parameterLabel) {
+    const statusData = { 'Good': [], 'Fair': [], 'Poor': [] };
+    
+    filteredStations.forEach(station => {
+        const status = station.quality_status;
+        const value = station[parameter];
+        if (statusData[status]) {
+            statusData[status].push(value);
+        }
+    });
+    
+    const labels = Object.keys(statusData);
+    const data = labels.map(status => {
+        const values = statusData[status];
+        return values.length > 0 ? (values.reduce((sum, val) => sum + val, 0) / values.length).toFixed(2) : 0;
+    });
+    
+    const colors = ['#28a745', '#ffc107', '#dc3545'];
+    
+    return {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: `Average ${parameterLabel}`,
+                data: data,
+                backgroundColor: colors,
+                borderColor: '#fff',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: parameter !== 'ph',
+                    title: { display: true, text: `Average ${parameterLabel}` }
                 }
             },
             plugins: {
                 title: {
                     display: true,
-                    text: `Water Quality: ${parameterLabel}`,
-                    font: {
-                        size: 16
-                    }
+                    text: `Average ${parameterLabel} by Quality Status (${filteredStations.length} stations)`,
+                    font: { size: 16 }
                 },
-                legend: {
-                    display: false
-                }
+                legend: { display: true, position: 'top' }
             }
         }
+    };
+}
+
+// Create chart by station type
+function createStationTypeChart(parameter, parameterLabel) {
+    const typeData = {};
+    
+    filteredStations.forEach(station => {
+        const type = station.station_type;
+        const value = station[parameter];
+        
+        if (!typeData[type]) {
+            typeData[type] = [];
+        }
+        typeData[type].push(value);
     });
+    
+    const types = Object.keys(typeData);
+    const labels = types.length > 0 ? types : ['Unknown'];
+    const data = types.length > 0 ? 
+        types.map(type => {
+            const values = typeData[type];
+            return (values.reduce((sum, val) => sum + val, 0) / values.length).toFixed(2);
+        }) : [0];
+    
+    const colors = [
+        '#2196F3', '#4CAF50', '#FF9800', '#F44336', '#9C27B0',
+        '#00BCD4', '#8BC34A', '#FF5722', '#795548', '#607D8B'
+    ];
+    
+    return {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: `Average ${parameterLabel}`,
+                data: data,
+                backgroundColor: labels.map((_, index) => colors[index % colors.length]),
+                borderColor: '#fff',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: parameter !== 'ph',
+                    title: { display: true, text: `Average ${parameterLabel}` }
+                },
+                x: { ticks: { maxRotation: 45, minRotation: 0 } }
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    text: `Average ${parameterLabel} by Station Type (${filteredStations.length} stations)`,
+                    font: { size: 16 }
+                },
+                legend: { display: true, position: 'top' }
+            }
+        }
+    };
+}
+
+// Create value distribution chart
+function createDistributionChart(parameter, parameterLabel) {
+    const values = filteredStations.map(station => station[parameter]);
+    
+    // Create ranges for distribution
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    const range = max - min;
+    const numBins = 10;
+    const binSize = range / numBins;
+    
+    const bins = Array(numBins).fill(0);
+    const binLabels = [];
+    
+    for (let i = 0; i < numBins; i++) {
+        const binStart = min + (i * binSize);
+        const binEnd = min + ((i + 1) * binSize);
+        binLabels.push(`${binStart.toFixed(1)}-${binEnd.toFixed(1)}`);
+        
+        values.forEach(value => {
+            if (value >= binStart && value < binEnd) {
+                bins[i]++;
+            }
+        });
+    }
+    
+    return {
+        type: 'bar',
+        data: {
+            labels: binLabels,
+            datasets: [{
+                label: `Number of Stations`,
+                data: bins,
+                backgroundColor: '#2196F3',
+                borderColor: '#1976D2',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: { display: true, text: 'Number of Stations' }
+                },
+                x: {
+                    title: { display: true, text: parameterLabel },
+                    ticks: { maxRotation: 45, minRotation: 0 }
+                }
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    text: `${parameterLabel} Distribution (${filteredStations.length} stations)`,
+                    font: { size: 16 }
+                },
+                legend: { display: true, position: 'top' }
+            }
+        }
+    };
 }
 
 // Update statistics
@@ -296,6 +536,7 @@ function setupEventListeners() {
     document.getElementById('statusFilter').addEventListener('change', filterStations);
     document.getElementById('stationTypeFilter').addEventListener('change', filterStations);
     document.getElementById('parameterSelect').addEventListener('change', createChart);
+    document.getElementById('chartTypeSelect').addEventListener('change', createChart);
 }
 
 // Initialize the app when page loads

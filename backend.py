@@ -57,34 +57,74 @@ def get_stations_by_province(province):
 
 @app.route('/api/stations/status/<status>', methods=['GET'])
 def get_stations_by_status(status):
-    """Return stations filtered by status"""
-    filtered_stations = [s for s in STATIONS_DATA if s['status'] == status]
+    """Return stations filtered by quality status"""
+    filtered_stations = [s for s in STATIONS_DATA if s['quality_status'] == status]
+    return jsonify(filtered_stations)
+
+@app.route('/api/stations/type/<station_type>', methods=['GET'])
+def get_stations_by_type(station_type):
+    """Return stations filtered by station type"""
+    filtered_stations = [s for s in STATIONS_DATA if s['station_type'] == station_type]
+    return jsonify(filtered_stations)
+
+@app.route('/api/stations/active', methods=['GET'])
+def get_active_stations():
+    """Return only active stations"""
+    filtered_stations = [s for s in STATIONS_DATA if s['station_status'] == 'Active']
     return jsonify(filtered_stations)
 
 @app.route('/api/statistics', methods=['GET'])
 def get_statistics():
-    """Return basic statistics about the stations"""
+    """Return comprehensive statistics about the stations"""
     total_stations = len(STATIONS_DATA)
-    good_stations = len([s for s in STATIONS_DATA if s['status'] == 'Good'])
-    fair_stations = len([s for s in STATIONS_DATA if s['status'] == 'Fair'])
-    poor_stations = len([s for s in STATIONS_DATA if s['status'] == 'Poor'])
+    active_stations = len([s for s in STATIONS_DATA if s['station_status'] == 'Active'])
+    good_stations = len([s for s in STATIONS_DATA if s['quality_status'] == 'Good'])
+    fair_stations = len([s for s in STATIONS_DATA if s['quality_status'] == 'Fair'])
+    poor_stations = len([s for s in STATIONS_DATA if s['quality_status'] == 'Poor'])
     
+    # Calculate averages
     avg_ph = sum(s['ph'] for s in STATIONS_DATA) / total_stations
     avg_temperature = sum(s['temperature'] for s in STATIONS_DATA) / total_stations
     avg_turbidity = sum(s['turbidity'] for s in STATIONS_DATA) / total_stations
+    avg_dissolved_oxygen = sum(s['dissolved_oxygen'] for s in STATIONS_DATA) / total_stations
+    avg_conductivity = sum(s['conductivity'] for s in STATIONS_DATA) / total_stations
+    avg_nitrate = sum(s['nitrate'] for s in STATIONS_DATA) / total_stations
+    avg_phosphate = sum(s['phosphate'] for s in STATIONS_DATA) / total_stations
+    
+    # Station type distribution
+    station_types = {}
+    for station in STATIONS_DATA:
+        station_type = station['station_type']
+        station_types[station_type] = station_types.get(station_type, 0) + 1
+    
+    # Province distribution
+    provinces = {}
+    for station in STATIONS_DATA:
+        province = station['province']
+        provinces[province] = provinces.get(province, 0) + 1
     
     return jsonify({
         'total_stations': total_stations,
-        'status_distribution': {
+        'active_stations': active_stations,
+        'quality_status_distribution': {
             'good': good_stations,
             'fair': fair_stations,
             'poor': poor_stations
         },
+        'station_type_distribution': station_types,
+        'province_distribution': provinces,
         'averages': {
             'ph': round(avg_ph, 2),
             'temperature': round(avg_temperature, 2),
-            'turbidity': round(avg_turbidity, 2)
-        }
+            'turbidity': round(avg_turbidity, 2),
+            'dissolved_oxygen': round(avg_dissolved_oxygen, 2),
+            'conductivity': round(avg_conductivity, 2),
+            'nitrate': round(avg_nitrate, 2),
+            'phosphate': round(avg_phosphate, 2)
+        },
+        'data_source': 'NIWIS Water Quality Monitoring Network',
+        'data_date': '2025-09-18',
+        'analytics_type': 'Prescriptive Data Analytics'
     })
 
 @app.route('/api/provinces', methods=['GET'])
@@ -98,16 +138,22 @@ def home():
     """API information endpoint"""
     return jsonify({
         'message': 'HydroInsight - South African Water Quality Monitoring API',
-        'version': '1.0.0',
+        'version': '2.0.0',
+        'data_source': 'NIWIS Water Quality Monitoring Network',
+        'data_date': '2025-09-18',
+        'analytics_type': 'Prescriptive Data Analytics',
         'endpoints': {
             '/api/stations': 'Get all stations',
             '/api/stations/<id>': 'Get specific station by ID',
             '/api/stations/province/<province>': 'Get stations by province',
-            '/api/stations/status/<status>': 'Get stations by status',
-            '/api/statistics': 'Get basic statistics',
+            '/api/stations/status/<status>': 'Get stations by quality status',
+            '/api/stations/type/<type>': 'Get stations by station type',
+            '/api/stations/active': 'Get active stations only',
+            '/api/statistics': 'Get comprehensive statistics',
             '/api/provinces': 'Get list of provinces'
         },
-        'total_stations': len(STATIONS_DATA)
+        'total_stations': len(STATIONS_DATA),
+        'active_stations': len([s for s in STATIONS_DATA if s['station_status'] == 'Active'])
     })
 
 # Serve static files

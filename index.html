@@ -12,6 +12,7 @@
         <header>
             <h1>🌊 HydroInsight</h1>
             <p>South African Water Quality Monitoring Network</p>
+            <p><small>Data Source: NIWIS Water Quality Monitoring Network - September 18, 2025</small></p>
         </header>
 
         <div class="controls">
@@ -40,6 +41,21 @@
                 </select>
             </div>
             <div class="control-group">
+                <label for="stationTypeFilter">Station Type:</label>
+                <select id="stationTypeFilter">
+                    <option value="all">All Types</option>
+                    <option value="River">River</option>
+                    <option value="Groundwater">Groundwater</option>
+                    <option value="Dam / Lake">Dam / Lake</option>
+                    <option value="Spring">Spring</option>
+                    <option value="Mine / Industry">Mine / Industry</option>
+                    <option value="Water Supply">Water Supply</option>
+                    <option value="Waste">Waste</option>
+                    <option value="Transfer">Transfer</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="control-group">
                 <label for="parameterSelect">Parameter:</label>
                 <select id="parameterSelect">
                     <option value="ph">pH Level</option>
@@ -47,6 +63,9 @@
                     <option value="temperature">Temperature (°C)</option>
                     <option value="dissolved_oxygen">Dissolved Oxygen (mg/L)</option>
                     <option value="conductivity">Conductivity (μS/cm)</option>
+                    <option value="total_dissolved_solids">Total Dissolved Solids (mg/L)</option>
+                    <option value="nitrate">Nitrate (mg/L)</option>
+                    <option value="phosphate">Phosphate (mg/L)</option>
                 </select>
             </div>
         </div>
@@ -57,8 +76,20 @@
                 <span id="totalStations">-</span>
             </div>
             <div class="stat-card">
-                <h3>Good Status</h3>
+                <h3>Active Stations</h3>
+                <span id="activeStations">-</span>
+            </div>
+            <div class="stat-card">
+                <h3>Good Quality</h3>
                 <span id="goodStations">-</span>
+            </div>
+            <div class="stat-card">
+                <h3>Fair Quality</h3>
+                <span id="fairStations">-</span>
+            </div>
+            <div class="stat-card">
+                <h3>Poor Quality</h3>
+                <span id="poorStations">-</span>
             </div>
             <div class="stat-card">
                 <h3>Avg pH</h3>
@@ -68,22 +99,26 @@
                 <h3>Avg Temperature</h3>
                 <span id="avgTemp">-</span>
             </div>
+            <div class="stat-card">
+                <h3>Avg Turbidity</h3>
+                <span id="avgTurbidity">-</span>
+            </div>
         </div>
 
         <div class="main-content">
             <div class="map-section">
-                <h2>📍 Monitoring Stations</h2>
+                <h2>Monitoring Stations</h2>
                 <div id="map"></div>
             </div>
             
             <div class="chart-section">
-                <h2>📊 Water Quality Parameters</h2>
+                <h2>Water Quality Parameters</h2>
                 <canvas id="chart"></canvas>
             </div>
         </div>
 
         <div class="station-details">
-            <h2>🏢 Station Details</h2>
+            <h2>Station Details</h2>
             <div id="stationInfo">Click on a station marker to view details</div>
         </div>
     </div>

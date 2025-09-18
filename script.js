@@ -1,42 +1,59 @@
 // HydroInsight - South African Water Quality Monitoring
-// Main JavaScript Application
+// Main JavaScript Application - NIWIS Data from September 18, 2025
 
 let stations = [];
 let filteredStations = [];
 let map;
 let chart;
 let markers = [];
+let isDataLoaded = false;
+let maxMarkersToShow = 1000; // Limit markers for performance
 
 // Load water quality data
 async function loadWaterQualityData() {
     try {
+        console.log('Loading NIWIS Water Quality Monitoring Network data...');
         const response = await fetch('water_quality_data.json');
         stations = await response.json();
         filteredStations = [...stations];
-        console.log('Loaded', stations.length, 'water quality stations');
+        isDataLoaded = true;
+        console.log('Loaded', stations.length, 'water quality stations from NIWIS');
+        console.log('Data source: September 18, 2025 - Prescriptive Data Analytics');
+        
+        // Update province filter options dynamically
+        updateProvinceFilter();
+        
         return stations;
     } catch (error) {
         console.error('Error loading water quality data:', error);
-        // Fallback to sample data if JSON file is not available
-        stations = [
-            {
-                id: 1,
-                name: "Cape Town - V&A Waterfront",
-                latitude: -33.9083,
-                longitude: 18.4216,
-                province: "Western Cape",
-                waterbody: "Atlantic Ocean",
-                ph: 8.1,
-                turbidity: 2.3,
-                temperature: 16.5,
-                dissolved_oxygen: 7.8,
-                conductivity: 1250,
-                last_sample: "2024-12-15",
-                status: "Good"
-            }
-        ];
-        filteredStations = [...stations];
-        return stations;
+        // Show error message to user
+        document.getElementById('stationInfo').innerHTML = 
+            '<div style="color: red;">Error loading water quality data. Please ensure water_quality_data.json is available.</div>';
+        return [];
+    }
+}
+
+// Update province filter options based on loaded data
+function updateProvinceFilter() {
+    const provinceFilter = document.getElementById('stationFilter');
+    const currentValue = provinceFilter.value;
+    
+    // Clear existing options except "All Provinces"
+    provinceFilter.innerHTML = '<option value="all">All Provinces</option>';
+    
+    // Get unique provinces from data
+    const provinces = [...new Set(stations.map(s => s.province))].sort();
+    
+    provinces.forEach(province => {
+        const option = document.createElement('option');
+        option.value = province;
+        option.textContent = province;
+        provinceFilter.appendChild(option);
+    });
+    
+    // Restore previous selection if it still exists
+    if (provinces.includes(currentValue)) {
+        provinceFilter.value = currentValue;
     }
 }
 
@@ -59,22 +76,40 @@ function updateMapMarkers() {
     markers.forEach(marker => map.removeLayer(marker));
     markers = [];
     
+    // Limit markers for performance
+    const stationsToShow = filteredStations.slice(0, maxMarkersToShow);
+    
+    console.log(`Showing ${stationsToShow.length} markers (filtered from ${filteredStations.length} stations)`);
+    
     // Add markers for filtered stations
-    filteredStations.forEach(station => {
-        const markerColor = getStatusColor(station.status);
+    stationsToShow.forEach(station => {
+        const markerColor = getStatusColor(station.quality_status);
         const marker = L.circleMarker([station.latitude, station.longitude], {
-            radius: 8,
+            radius: 6,
             fillColor: markerColor,
             color: '#fff',
-            weight: 2,
+            weight: 1,
             opacity: 1,
-            fillOpacity: 0.8
+            fillOpacity: 0.7
         }).addTo(map);
         
         marker.bindPopup(createPopupContent(station));
         marker.on('click', () => showStationDetails(station));
         markers.push(marker);
     });
+    
+    // Show warning if markers are limited
+    if (filteredStations.length > maxMarkersToShow) {
+        const warning = L.control({position: 'bottomleft'});
+        warning.onAdd = function(map) {
+            const div = L.DomUtil.create('div', 'marker-warning');
+            div.innerHTML = `<div style="background: rgba(255,255,255,0.9); padding: 5px; border-radius: 3px; font-size: 12px;">
+                Showing ${maxMarkersToShow} of ${filteredStations.length} stations. Use filters to narrow results.
+            </div>`;
+            return div;
+        };
+        warning.addTo(map);
+    }
 }
 
 // Get color based on status
@@ -92,24 +127,28 @@ function createPopupContent(station) {
     return `
         <div class="popup-header">${station.name}</div>
         <div class="popup-parameter">
+            <span class="popup-label">Station Number:</span>
+            <span class="popup-value">${station.station_number}</span>
+        </div>
+        <div class="popup-parameter">
+            <span class="popup-label">Type:</span>
+            <span class="popup-value">${station.station_type}</span>
+        </div>
+        <div class="popup-parameter">
             <span class="popup-label">Province:</span>
             <span class="popup-value">${station.province}</span>
         </div>
         <div class="popup-parameter">
-            <span class="popup-label">Waterbody:</span>
-            <span class="popup-value">${station.waterbody}</span>
-        </div>
-        <div class="popup-parameter">
-            <span class="popup-label">pH:</span>
-            <span class="popup-value">${station.ph}</span>
-        </div>
-        <div class="popup-parameter">
-            <span class="popup-label">Temperature:</span>
-            <span class="popup-value">${station.temperature}°C</span>
-        </div>
-        <div class="popup-parameter">
             <span class="popup-label">Status:</span>
-            <span class="popup-value status-${station.status.toLowerCase()}">${station.status}</span>
+            <span class="popup-value">${station.station_status}</span>
+        </div>
+        <div class="popup-parameter">
+            <span class="popup-label">Quality:</span>
+            <span class="popup-value status-${station.quality_status.toLowerCase()}">${station.quality_status}</span>
+        </div>
+        <div class="popup-parameter">
+            <span class="popup-label">Samples:</span>
+            <span class="popup-value">${station.number_of_samples}</span>
         </div>
         <div class="popup-parameter">
             <span class="popup-label">Last Sample:</span>
@@ -125,10 +164,13 @@ function showStationDetails(station) {
         <h3>${station.name}</h3>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
             <div>
-                <strong>Location:</strong> ${station.province}<br>
-                <strong>Waterbody:</strong> ${station.waterbody}<br>
+                <strong>Station Number:</strong> ${station.station_number}<br>
+                <strong>Type:</strong> ${station.station_type}<br>
+                <strong>Province:</strong> ${station.province}<br>
                 <strong>Coordinates:</strong> ${station.latitude.toFixed(4)}, ${station.longitude.toFixed(4)}<br>
-                <strong>Status:</strong> <span class="status-${station.status.toLowerCase()}">${station.status}</span>
+                <strong>Station Status:</strong> ${station.station_status}<br>
+                <strong>Quality Status:</strong> <span class="status-${station.quality_status.toLowerCase()}">${station.quality_status}</span><br>
+                <strong>Samples:</strong> ${station.number_of_samples}
             </div>
             <div>
                 <strong>pH Level:</strong> ${station.ph}<br>
@@ -136,8 +178,15 @@ function showStationDetails(station) {
                 <strong>Turbidity:</strong> ${station.turbidity} NTU<br>
                 <strong>Dissolved Oxygen:</strong> ${station.dissolved_oxygen} mg/L<br>
                 <strong>Conductivity:</strong> ${station.conductivity} μS/cm<br>
+                <strong>Total Dissolved Solids:</strong> ${station.total_dissolved_solids} mg/L<br>
+                <strong>Nitrate:</strong> ${station.nitrate} mg/L<br>
+                <strong>Phosphate:</strong> ${station.phosphate} mg/L<br>
                 <strong>Last Sample:</strong> ${station.last_sample}
             </div>
+        </div>
+        <div style="margin-top: 15px; padding: 10px; background: #f8f9fa; border-radius: 5px; font-size: 0.9em; color: #6c757d;">
+            <strong>Data Source:</strong> ${station.data_source}<br>
+            <strong>Data Date:</strong> ${station.data_date} | <strong>Analytics Type:</strong> ${station.analytics_type}
         </div>
     `;
 }
@@ -203,27 +252,39 @@ function createChart() {
 // Update statistics
 function updateStatistics() {
     const totalStations = filteredStations.length;
-    const goodStations = filteredStations.filter(s => s.status === 'Good').length;
-    const avgPh = (filteredStations.reduce((sum, s) => sum + s.ph, 0) / totalStations).toFixed(1);
-    const avgTemp = (filteredStations.reduce((sum, s) => sum + s.temperature, 0) / totalStations).toFixed(1);
+    const activeStations = filteredStations.filter(s => s.station_status === 'Active').length;
+    const goodStations = filteredStations.filter(s => s.quality_status === 'Good').length;
+    const fairStations = filteredStations.filter(s => s.quality_status === 'Fair').length;
+    const poorStations = filteredStations.filter(s => s.quality_status === 'Poor').length;
     
-    document.getElementById('totalStations').textContent = totalStations;
-    document.getElementById('goodStations').textContent = goodStations;
+    const avgPh = totalStations > 0 ? (filteredStations.reduce((sum, s) => sum + s.ph, 0) / totalStations).toFixed(1) : '0';
+    const avgTemp = totalStations > 0 ? (filteredStations.reduce((sum, s) => sum + s.temperature, 0) / totalStations).toFixed(1) : '0';
+    const avgTurbidity = totalStations > 0 ? (filteredStations.reduce((sum, s) => sum + s.turbidity, 0) / totalStations).toFixed(1) : '0';
+    
+    document.getElementById('totalStations').textContent = totalStations.toLocaleString();
+    document.getElementById('activeStations').textContent = activeStations.toLocaleString();
+    document.getElementById('goodStations').textContent = goodStations.toLocaleString();
+    document.getElementById('fairStations').textContent = fairStations.toLocaleString();
+    document.getElementById('poorStations').textContent = poorStations.toLocaleString();
     document.getElementById('avgPh').textContent = avgPh;
     document.getElementById('avgTemp').textContent = avgTemp + '°C';
+    document.getElementById('avgTurbidity').textContent = avgTurbidity + ' NTU';
 }
 
 // Filter stations based on selected criteria
 function filterStations() {
     const provinceFilter = document.getElementById('stationFilter').value;
     const statusFilter = document.getElementById('statusFilter').value;
+    const stationTypeFilter = document.getElementById('stationTypeFilter').value;
     
     filteredStations = stations.filter(station => {
         const provinceMatch = provinceFilter === 'all' || station.province === provinceFilter;
-        const statusMatch = statusFilter === 'all' || station.status === statusFilter;
-        return provinceMatch && statusMatch;
+        const statusMatch = statusFilter === 'all' || station.quality_status === statusFilter;
+        const typeMatch = stationTypeFilter === 'all' || station.station_type === stationTypeFilter;
+        return provinceMatch && statusMatch && typeMatch;
     });
     
+    console.log(`Filtered to ${filteredStations.length} stations`);
     updateMapMarkers();
     createChart();
     updateStatistics();
@@ -233,6 +294,7 @@ function filterStations() {
 function setupEventListeners() {
     document.getElementById('stationFilter').addEventListener('change', filterStations);
     document.getElementById('statusFilter').addEventListener('change', filterStations);
+    document.getElementById('stationTypeFilter').addEventListener('change', filterStations);
     document.getElementById('parameterSelect').addEventListener('change', createChart);
 }
 

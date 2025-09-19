@@ -226,7 +226,7 @@ function showStationDetails(station) {
         </div>
         <div style="margin-top: 15px; padding: 10px; background: #f8f9fa; border-radius: 5px; font-size: 0.9em; color: #6c757d;">
             <strong>Data Source:</strong> ${station.data_source}<br>
-            <strong>Data Date:</strong> ${station.data_date} | <strong>Analytics Type:</strong> ${station.analytics_type}
+            <strong>Data Date:</strong> ${station.data_date}
         </div>
     `;
 }

@@ -1,3 +1,6 @@
+/* Import new font */
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600&display=swap');
+
 /* Modern, clean styling for HydroInsight */
 * {
     margin: 0;
@@ -6,41 +9,60 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    margin: 0;
+    padding: 0;
+    font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: url('/images/wwp1.jpg') no-repeat center center fixed;
+    background-size: cover;
+    background-attachment: fixed;
     min-height: 100vh;
-    padding: 20px;
+    position: relative;
 }
 
 .container {
     max-width: 1400px;
     margin: 0 auto;
-    background: white;
+    background: rgba(255, 255, 255, 0.65); /* More transparent */
     border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     overflow: hidden;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 }
 
 header {
-    background: linear-gradient(135deg, #2196F3 0%, #21CBF3 100%);
+    background: rgba(255, 255, 255, 0.1); /* Very transparent */
     color: white;
-    padding: 30px;
+    padding: 40px 20px;
     text-align: center;
 }
 
 header h1 {
-    font-size: 2.5em;
+    color: #0b8eca;
+    font-size: 3.2em;
+    font-weight: 600;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.4),
+                 0 0 30px rgba(0, 0, 0, 0.2);
     margin-bottom: 10px;
-    font-weight: 300;
+    letter-spacing: -0.5px;
 }
 
 header p {
-    font-size: 1.1em;
-    opacity: 0.9;
+    color: #0b8eca;
+    font-size: 1.2em;
+    font-weight: 400;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3),
+                 0 0 20px rgba(0, 0, 0, 0.2);
+    margin: 5px 0;
+}
+
+header p small {
+    opacity: 1;
+    font-weight: 300;
 }
 
 .controls {
-    background: #f8f9fa;
+    background: rgba(248, 249, 250, 0.45);
     padding: 20px 30px;
     display: flex;
     gap: 20px;
@@ -75,15 +97,15 @@ header p {
 }
 
 .stats-panel {
+    background: rgba(248, 249, 250, 0.45);
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 20px;
     padding: 30px;
-    background: #f8f9fa;
 }
 
 .stat-card {
-    background: white;
+    background: rgba(255, 255, 255, 0.65);
     padding: 20px;
     border-radius: 10px;
     text-align: center;
@@ -106,7 +128,7 @@ header p {
 .stat-card span {
     font-size: 2em;
     font-weight: bold;
-    color: #2196F3;
+    color: #0b8eca;
 }
 
 .main-content {
@@ -117,7 +139,7 @@ header p {
 }
 
 .map-section, .chart-section {
-    background: white;
+    background: rgba(255, 255, 255, 0.65);
 }
 
 .map-section h2, .chart-section h2 {
@@ -140,8 +162,8 @@ header p {
 }
 
 .station-details {
+    background: rgba(248, 249, 250, 0.45);
     padding: 30px;
-    background: #f8f9fa;
     border-top: 1px solid #e9ecef;
 }
 
@@ -155,11 +177,11 @@ header p {
 }
 
 #stationInfo {
-    background: white;
+    background: rgba(255, 255, 255, 0.65);
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    color: #6c757d;
+    color: #202b35;
     font-style: italic;
 }
 
@@ -218,4 +240,25 @@ header p {
 .popup-value {
     color: #2196F3;
     font-weight: 500;
+}
+
+.social-links {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 20px;  /* Increased gap between icons */
+}
+
+.social-icon {
+    width: 32px;  /* Increased from 24px */
+    height: 32px; /* Increased from 24px */
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.social-icon:hover {
+    opacity: 1;
+    transform: scale(1.1); /* Subtle hover effect */
+    transition: all 0.2s ease;
 }

@@ -2,7 +2,7 @@
 
 **South African Water Quality Monitoring Platform**
 
-HydroInsight is a comprehensive web application that provides real-time visualization of South African water quality monitoring stations through interactive maps and data analytics. Built for environmental scientists, researchers, and water management professionals across South Africa's nine provinces.
+HydroInsight is a comprehensive web application that provides real-time visualization of South African water quality monitoring stations through interactive maps and data analytics. Built for the public, environmental scientists, researchers, and water management professionals across South Africa's nine provinces.
 
 ![HydroInsight Demo](https://img.shields.io/badge/Status-Live-brightgreen)
 ![Python](https://img.shields.io/badge/Python-3.8+-blue)
@@ -145,47 +145,12 @@ const stations = [
 ];
 ```
 
-### Customizing Charts
-Modify the Chart.js configuration in `script.js` to change visualization types, colors, or data metrics.
-
-## 🌐 Deployment Options
-
-This application can be deployed to various hosting platforms:
-
-### Static Hosting (Frontend Only)
-- **Netlify**: Drag and drop deployment
-- **Vercel**: Git-based deployment
-- **GitHub Pages**: Static site hosting
-
-### Full Stack Hosting
-- **Heroku**: Full-stack hosting with backend support
-- **Railway**: Modern deployment platform
-- **DigitalOcean**: VPS hosting
-
-## 🤝 Contributing
-
-We welcome contributions! Here's how you can help:
-
-1. **Fork** the repository
-2. **Create** a feature branch (`git checkout -b feature/AmazingFeature`)
-3. **Commit** your changes (`git commit -m 'Add some AmazingFeature'`)
-4. **Push** to the branch (`git push origin feature/AmazingFeature`)
-5. **Open** a Pull Request
-
-### Development Guidelines
-- Follow existing code style and naming conventions
-- Add comments for complex functionality
-- Test changes across different browsers
-- Update documentation as needed
-
 ## 📈 Future Enhancements
 
 - [ ] Real-time data integration from IoT sensors
 - [ ] Historical data trends and time-series analysis
-- [ ] Advanced filtering and search capabilities
 - [ ] Export functionality for reports
 - [ ] Mobile application development
-- [ ] Multi-language support
 - [ ] User authentication and data management
 - [ ] Integration with external water quality databases
 
@@ -193,23 +158,11 @@ We welcome contributions! Here's how you can help:
 
 Found a bug or have a feature request? Please [open an issue](https://github.com/THakgvLO/HydroInsight/issues) on GitHub.
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## 👨‍💻 Author
 
 **Thakgalo Sehlola**
 - GitHub: [@THakgvLO](https://github.com/THakgvLO)
 - LinkedIn: [thakgalo-sehlola](https://linkedin.com/in/thakgalo-sehlola)
-
-## 🙏 Acknowledgments
-
-- OpenStreetMap contributors for mapping tiles
-- Leaflet.js community for the mapping library
-- Chart.js team for data visualization capabilities
-- Flask community for the Python web framework
-
 ---
 
 **Built with ❤️ for environmental monitoring and water quality research**

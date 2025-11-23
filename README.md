@@ -164,7 +164,3 @@ Found a bug or have a feature request? Please [open an issue](https://github.com
 - GitHub: [@THakgvLO](https://github.com/THakgvLO)
 - LinkedIn: [thakgalo-sehlola](https://linkedin.com/in/thakgalo-sehlola)
 ---
-
-**Built with ❤️ for environmental monitoring and water quality research**
-
-*HydroInsight - Making water quality data accessible and actionable*
